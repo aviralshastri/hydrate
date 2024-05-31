@@ -40,36 +40,39 @@ function ProductView() {
   return (
     <Layout title="hydrate" navbar={true}>
       <div className="container mx-auto px-4 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 border border-solid border-black p-8 rounded-xl">
-          <div className="lg:order-2">
+        <div className="flex flex-col lg:flex-row gap-12 border border-solid border-gray-200 p-8 rounded-xl shadow-lg">
+          <div className="flex-1 lg:order-2">
             <Carousal images={images} />
           </div>
-          <div className="lg:order-1">
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
+          <div className="lg:hidden my-8 border-t border-gray-300"></div>{" "}
+          <div className="flex-1 lg:order-1 lg:pr-8">
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               {productDetails.name}
             </h1>
-            <p className="text-lg text-gray-700 mb-8">
-              {productDetails.material}
+            <p className="text-base lg:text-lg text-gray-600 mb-4">
+              Material: {productDetails.material}
             </p>
-            <p className="text-xl text-gray-800 mb-8">
+            <p className="text-lg lg:text-base text-gray-700 mb-6">
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
               Reprehenderit, aliquid.
             </p>
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">
                 ₹{productDetails.price}
               </h2>
               <div className="flex space-x-4">
-                <button className="bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700">
+                <button className="bg-blue-600 text-white py-2 px-6 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-300 ease-in-out">
                   Add to Cart
                 </button>
-                <button className="bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700">
+                <button className="bg-green-600 text-white py-2 px-6 rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out">
                   Buy Now
                 </button>
               </div>
             </div>
           </div>
+          <div className="hidden lg:block lg:order-1 w-px bg-gray-300 mx-8"></div>{" "}
         </div>
+
         <div className="mt-12 border border-solid border-black p-8 rounded-xl">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Specifications
