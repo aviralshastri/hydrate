@@ -39,8 +39,8 @@ function ProductView() {
 
   return (
     <Layout title="hydrate" navbar={true}>
-      <div className="container mx-auto px-4 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-12 border border-solid border-gray-200 p-8 rounded-xl shadow-lg">
+      <div className="container mx-auto px-4 lg:px-8 pb-8 pt-4">
+        <div className="flex flex-col lg:flex-row gap-12 border border-solid border-black p-8 rounded-xl">
           <div className="flex-1 lg:order-2">
             <Carousal images={images} />
           </div>
@@ -56,8 +56,8 @@ function ProductView() {
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
               Reprehenderit, aliquid.
             </p>
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">
+            <div className="flex sm:flex-row flex-col sm:items-center items-start sm:justify-between">
+              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
                 ₹{productDetails.price}
               </h2>
               <div className="flex space-x-4">
@@ -88,6 +88,7 @@ function ProductView() {
             </tbody>
           </table>
         </div>
+
         <div className="mt-12 border border-solid border-black p-8 rounded-xl">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Product Description
@@ -98,6 +99,7 @@ function ProductView() {
             necessitatibus!
           </p>
         </div>
+
         <div className="mt-12">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
             Similar Products
@@ -106,6 +108,7 @@ function ProductView() {
             <SimilarProductCard products={products} />
           </div>
         </div>
+
       </div>
     </Layout>
   );
