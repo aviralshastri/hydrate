@@ -1,27 +1,56 @@
 import Link from "next/link";
 import { useState } from "react";
 import React from "react";
-import { BiSolidLogInCircle } from "react-icons/bi";
-import { FcGoogle } from "react-icons/fc";
+import { RiLoginCircleLine } from "react-icons/ri";
 import Head from "next/head";
 import Layout from "@/components/layout/Layout";
 import login from "../../utils/login";
 import Image from "next/image";
 import Logo from "@/assets/logo.jpg";
 
-
-
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [credCheck, setCredCheck] = useState(true);
+  const [isToastVisible, setIsToastVisible] = useState(false);
+  const [toastText, setToastText] = useState("");
+  const [toastColor, setToastColor] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      login(email, password);
+      const isAuthenticated = await login(email, password);
+      if (isAuthenticated) {
+        setToastText("Logging in");
+        setToastColor("bg-green-600");
+        setIsToastVisible(true);
+        setCredCheck(true);
+        setTimeout(() => {
+          setIsToastVisible(false);
+          window.location.href = "/";
+        }, 1500);
+      } else {
+        setCredCheck(false);
+        setToastText("Login failed. Please try again.");
+        setToastColor("bg-red-600");
+        setIsToastVisible(true);
+        setTimeout(() => {
+          setIsToastVisible(false);
+        }, 1000);
+      }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      console.error("An error occurred during authentication:", error);
+      setCredCheck(false);
+      setToastText(
+        "An error occurred during authentication. Please try again."
+      );
+      setToastColor("bg-red-600");
+      setIsToastVisible(true);
+      setTimeout(() => {
+        setIsToastVisible(false);
+      }, 2000);
+    } finally {
+      return;
     }
   };
 
@@ -59,11 +88,13 @@ function Login() {
                 setEmail(e.target.value);
                 e.preventDefault();
               }}
+              value={email}
               type="text"
               placeholder="Enter email"
               className="border border-solid border-black px-6 py-2 rounded-lg w-full"
             />
             <input
+              value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 e.preventDefault();
@@ -82,12 +113,12 @@ function Login() {
               <button className="w-full items-center justify-center mt-6 mb-2 text-white bg-black py-2 rounded-lg">
                 <div className="flex flex-row items-center space-x-4 justify-center">
                   <h1 className="font-bold text-lg">Login</h1>
-                  <BiSolidLogInCircle size={30} />
+                  <RiLoginCircleLine size={30} />
                 </div>
               </button>
             </div>
             <h1
-              className={`text-red-500 ml-2 font-semibold text-center ₹{
+              className={`text-red-500 ml-2 font-semibold text-center ${
                 credCheck ? "hidden" : ""
               }`}
             >
@@ -105,6 +136,13 @@ function Login() {
           </Link>
         </div>
       </div>
+      {isToastVisible && (
+        <div
+          className={`fixed bottom-4 left-4 right-4 max-w-sm mx-auto flex flex-row items-center justify-between ${toastColor} text-white p-4 rounded-lg shadow-2xl`}
+        >
+          <h1 className="">{toastText}</h1>
+        </div>
+      )}
     </Layout>
   );
 }

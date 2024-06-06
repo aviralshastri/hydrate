@@ -48,7 +48,7 @@ function Products() {
   };
 
   return (
-    <Layout title="Products">
+    <Layout>
       <div>
         <div className="hidden lg:block">
           <div className="flex flex-row p-10 space-x-2">

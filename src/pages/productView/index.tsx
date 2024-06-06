@@ -38,7 +38,7 @@ function ProductView() {
   const images = [img1, img2, img3];
 
   return (
-    <Layout title="hydrate" navbar={true}>
+    <Layout navbar={true}>
       <div className="container mx-auto px-4 lg:px-8 pb-8 pt-4">
         <div className="flex flex-col lg:flex-row gap-12 border border-solid border-black p-8 rounded-xl">
           <div className="flex-1 lg:order-2">

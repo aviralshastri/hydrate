@@ -6,8 +6,7 @@ import Link from "next/link";
 import Lottie from "lottie-react";
 import tickAnimation from "@/assets/tickanimation.json";
 import ConfettiExplosion from "react-confetti-explosion";
-import signin from "../../utils/signin";
-
+import createAccount from "../../utils/create_account";
 
 function OtpVerification({
   text,
@@ -37,7 +36,7 @@ function OtpVerification({
       routeButtonText: "Go to home page",
     },
     {
-      type: "forgotPassword",
+      type: "password_reset",
       successText: "Password Reset Successful!",
       route: "/login",
       routeButtonText: "Go to login page",
@@ -70,11 +69,24 @@ function OtpVerification({
     return () => clearInterval(countdown);
   }, [timer]);
 
-  const otpVerification = (Otp) => {
+  const otpVerification = async (Otp) => {
     if (Otp.join("") === generatedOTP) {
-      setVerificationView(false);
-    } else {
-      alert('Invalid OTP! Please try again.');
+      if (VerificationType === "account") {
+        const create_account = await createAccount(
+          data.name,
+          data.password,
+          data.email,
+          data.phone_number,
+          data.dob
+        );
+        if (create_account) {
+          setVerificationView(false);
+        } else {
+          alert("Account creation failed. Please try again.");
+        }
+      } else {
+        alert("Wrong OTP! Please try again.");
+      }
     }
   };
 
@@ -135,6 +147,7 @@ function OtpVerification({
             >
               OTP Verification
             </h1>
+            <h1>{OTP}</h1>
             <h1 className="text-center text-gray-600 text-lg font-semibold">
               {text}
             </h1>
@@ -148,7 +161,7 @@ function OtpVerification({
                   maxLength="1"
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDownInput(index, e)}
-                  aria-label={`OTP ₹{index + 1}`}
+                  aria-label={`OTP ${index + 1}`}
                   ref={(el) => (inputs.current[index] = el)}
                 />
               ))}
@@ -166,9 +179,9 @@ function OtpVerification({
         </div>
       ) : (
         <div className="sm:min-h-screen h-full bg-gray-100 flex items-center justify-center flex-col sm:pt-24 pt-0 pb-6">
-          {confetti ? <ConfettiExplosion duration={5000} /> : null}
+          {confetti ? null : <ConfettiExplosion duration={5000} />}
           <div
-            className={`bg-green-400 p-6 pb-10 mt-10 sm:mt-0 rounded-lg shadow-lg max-w-sm w-full items-center flex flex-col justify-center mx-4 ₹{
+            className={`bg-green-400 p-6 pb-10 mt-10 sm:mt-0 rounded-lg shadow-lg max-w-sm w-full items-center flex flex-col justify-center mx-4 ${
               verificationView ? "" : "success-card"
             }`}
           >

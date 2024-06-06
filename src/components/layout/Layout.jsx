@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Navbar from '../header/navbar';
 import { gsap } from 'gsap';
 
-export default function Layout({ children, title = 'Next.js App', navbar = true }) {
+export default function Layout({ children, title = 'Hydrate : A online shopping website', navbar = true }) {
   const mainRef = useRef(null);
 
   useEffect(() => {

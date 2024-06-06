@@ -4,17 +4,15 @@ import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import Head from "next/head";
 import Layout from "@/components/layout/Layout";
-import login from "../../utils/login";
 import OtpVerifiaction from "../../components/otpVerification";
 import Image from "next/image";
 import Logo from "@/assets/logo.jpg";
-
-
 
 function Signin() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [dob, setDob] = useState("");
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
   const [otpVerificationView, setOtpVerificationView] = useState(false);
@@ -28,15 +26,10 @@ function Signin() {
     return otp;
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      login(email, password);
-    } catch (error) {
-      alert("An error occurred. Please try again.");
-    }
+    setOtpVerificationView(true);
   };
-
 
   return (
     <Layout navbar={false} title="Hydrate Sign-in">
@@ -75,23 +68,38 @@ function Signin() {
                 onChange={(e) => setName(e.target.value)}
                 type="text"
                 placeholder="Enter name"
-                className="border border-solid border-black px-6 py-2 rounded-lg w-full"
+                className="border border-solid border-black shadow-md px-6 py-2 rounded-lg w-full"
               />
               <input
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 placeholder="Enter email"
-                className="border border-solid border-black px-6 py-2 rounded-lg mt-5 w-full"
+                className="border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full"
               />
               <input
                 onChange={(e) => setPhone(e.target.value)}
                 type="number"
                 placeholder="Enter Phone.No"
-                className="border border-solid border-black px-6 py-2 rounded-lg mt-5 w-full number-field"
+                maxLength={10}
+                className="border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full number-field"
               />
+              <div className="bg-white border border-solid border-black shadow-md rounded-lg mt-5 flex flex-row w-full items-center p-4">
+                <h1 className="text-lg text-gray-700 font-semibold w-2/5">
+                  Date of Birth
+                </h1>
+                <div className="h-10 border border-solid border-gray-300 rounded-xl mx-4 flex-grow"></div>
+                <input
+                  placeholder="Enter DOB"
+                  type="date"
+                  onChange={(e) => {
+                    setDob(e.target.value);
+                  }}
+                  className="ml-2 px-4 py-2 border border-solid border-gray-300 shadow-md rounded-lg w-3/5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
               <div className="mt-5">
                 <h1 className="text-lg text-black font-bold ml-2">
-                  Password suggestions:
+                  Password constraints:
                 </h1>
                 <ul className="text-gray-600 text-sm ml-8 list-disc">
                   <li>Contains atleast 8 characters.</li>
@@ -105,7 +113,7 @@ function Signin() {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="Enter password"
-                className="border border-solid border-black px-6 py-2 rounded-lg mt-3 w-full"
+                className="border border-solid shadow-md border-black px-6 py-2 rounded-lg mt-3 w-full"
               />
               <input
                 onChange={(e) => {
@@ -113,34 +121,36 @@ function Signin() {
                 }}
                 type="password"
                 placeholder="Re-Enter password"
-                className="border border-solid border-black px-6 py-2 rounded-lg mt-5 w-full"
+                className="border border-solid shadow-md border-black px-6 py-2 rounded-lg mt-5 w-full"
               />
               <h1
-                className={`text-red-600 ml-2 font-normal ₹{
-                  password===rePassword ? "hidden" : ""
+                className={`text-red-600 ml-2 font-normal ${
+                  password === rePassword ? "hidden" : ""
                 }`}
               >
                 Password does not match.
               </h1>
               <h1 className="text-center text-xl font-semibold mt-2">or</h1>
               <button
-                onClick={() => setOtpVerificationView(true)}
-                type="button"
                 className="items-center justify-center mt-4 mb-2 text-black border bg-gray-50 border-black border-solid py-2 w-full rounded-full"
               >
                 <div className="flex flex-row items-center space-x-2 justify-center">
                   <FcGoogle size={25} />
-                  <h1 className="font-bold text-lg">Import details from Google</h1>
+                  <h1 className="font-bold text-lg">
+                    Import details from Google
+                  </h1>
                 </div>
               </button>
               <div className="flex flex-row">
-                <button className="w-full items-center justify-center mt-6 mb-2 text-white bg-black py-2 rounded-lg">
+                <button
+                  type="submit"
+                  className="w-full items-center justify-center mt-6 mb-2 text-white bg-black py-2 rounded-lg"
+                >
                   <div className="flex flex-row items-center justify-center">
                     <h1 className="font-bold text-lg">Create account</h1>
                   </div>
                 </button>
               </div>
-              
             </form>
           </div>
           <div className="bg-white p-4 mt-4 rounded-lg shadow-lg max-w-sm w-full items-center justify-center mx-4 flex flex-row">
@@ -159,7 +169,7 @@ function Signin() {
           OTP={generateOtp()}
           VerificationType="account"
           conffetti={true}
-          data={{ name: name, email: email, password: password, phone: phone }}
+          data={{ name: name, password: rePassword, email: email,  phone_number: phone,dob:dob }}
         />
       )}
     </Layout>
