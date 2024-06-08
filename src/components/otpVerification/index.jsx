@@ -1,16 +1,41 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import { PiPasswordFill } from "react-icons/pi";
 import { FaLongArrowAltRight } from "react-icons/fa";
-import useWindowSize from "react-use/lib/useWindowSize";
 import Link from "next/link";
 import Lottie from "lottie-react";
 import tickAnimation from "@/assets/tickanimation.json";
 import ConfettiExplosion from "react-confetti-explosion";
 import createAccount from "../../utils/create_account";
+import { sendEmailVerification } from "../../utils/otp_verification";
+
+function generateOTP() {
+  const digits = "0123456789";
+  let otp = "";
+  for (let i = 0; i < 6; i++) {
+    otp += digits[Math.floor(Math.random() * 10)];
+  }
+  return otp;
+}
+
+async function sendOTP(OTPpath, email, phone_number) {
+  let OTP = "";
+  if (OTPpath === "email" && email) {
+    OTP = generateOTP();
+    await sendEmailVerification(OTP, email);
+  } else if (OTPpath === "phone" && phone_number) {
+    OTP = generateOTP();
+  }
+  return OTP;
+}
+
+function resendOTP() {
+  const OTP = generateOTP();
+  return OTP;
+}
 
 function OtpVerification({
+  OTPpath,
   text,
-  OTP,
   VerificationType,
   confetti = false,
   data,
@@ -25,8 +50,16 @@ function OtpVerification({
   );
   const [route, setRoute] = useState("");
   const [routeButtonText, setRouteButtonText] = useState("Go to home page");
-  const [generatedOTP, setGeneratedOTP] = useState(OTP);
-  const { width, height } = useWindowSize();
+  const [generatedOTP, setGeneratedOTP] = useState("");
+
+  useEffect(() => {
+    const fetchOTP = async () => {
+      const otp = await sendOTP(OTPpath, data.email, data.phone_number);
+      setGeneratedOTP(otp);
+    };
+  
+    fetchOTP();
+  }, []);
 
   const VerificationObjects = [
     {
@@ -42,10 +75,6 @@ function OtpVerification({
       routeButtonText: "Go to login page",
     },
   ];
-
-  useEffect(() => {
-    console.log(generatedOTP);
-  }, [generatedOTP]);
 
   useEffect(() => {
     if (VerificationType === "account") {
@@ -77,7 +106,8 @@ function OtpVerification({
           data.password,
           data.email,
           data.phone_number,
-          data.dob
+          data.dob,
+          data.gender
         );
         if (create_account) {
           setVerificationView(false);
@@ -105,9 +135,7 @@ function OtpVerification({
       if (value === "" && index === 0) {
         inputs.current[0].focus();
       }
-
       const currentLength = newOtp.filter((digit) => digit !== "").length;
-
       if (currentLength === 6) {
         setTimeout(() => {
           otpVerification(newOtp);
@@ -147,7 +175,6 @@ function OtpVerification({
             >
               OTP Verification
             </h1>
-            <h1>{OTP}</h1>
             <h1 className="text-center text-gray-600 text-lg font-semibold">
               {text}
             </h1>

@@ -89,9 +89,9 @@ function Login() {
                 e.preventDefault();
               }}
               value={email}
-              type="text"
+              type="email"
               placeholder="Enter email"
-              className="border border-solid border-black px-6 py-2 rounded-lg w-full"
+              className="border border-solid border-black shadow-md px-6 py-2 rounded-lg w-full"
             />
             <input
               value={password}
@@ -101,7 +101,7 @@ function Login() {
               }}
               type="password"
               placeholder="Enter password"
-              className="border border-solid border-black px-6 py-2 rounded-lg mt-5 w-full"
+              className="border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full"
             />
             <Link
               href={"/"}

@@ -32,7 +32,7 @@ function Profile() {
   return (
     <Layout navbar={false}>
       <div className="flex w-full sm:min-h-screen sm:mt-0 mt-5 justify-center items-center">
-        <div className="flex w-full sm:w-3/12 justify-center items-center mx-2 mt-4 p-4 pt-8 border shadow-lg border-solid border-black rounded-xl">
+        <div className="flex w-full lg:w-4/12 md:w-6/12  sm:w-3/12 justify-center items-center mx-2 mt-4 p-4 pt-8 border shadow-xl border-solid border-black rounded-xl">
           <div className="flex w-full flex-col justify-center items-center ">
             <div>
               <Image
@@ -49,7 +49,7 @@ function Profile() {
             <form className="flex flex-col space-y-4 w-full px-1 mt-8">
               <Link
                 href={"/profile/account"}
-                className="border border-solid shadow-lg text-center flex flex-row items-center justify-center bg-black text-white border-black py-4 rounded-lg space-x-1"
+                className="border border-solid shadow-xl text-center flex flex-row items-center justify-center bg-black text-white border-black py-4 rounded-lg space-x-1"
               >
                 <RiAccountCircleFill size={40} />
                 <h1 className="text-2xl font-semibold text-center px-2">
@@ -58,7 +58,7 @@ function Profile() {
               </Link>
               <Link
                 href={"/orders"}
-                className="border border-solid shadow-lg flex flex-row items-center justify-center text-center bg-black text-white border-black py-4 rounded-lg space-x-1"
+                className="border border-solid shadow-xl flex flex-row items-center justify-center text-center bg-black text-white border-black py-4 rounded-lg space-x-1"
               >
                 <FaCartShopping size={30} />
                 <h1 className="text-2xl font-semibold text-center px-2">
@@ -67,7 +67,7 @@ function Profile() {
               </Link>
               <Link
                 href={"/profile/settings"}
-                className="border border-solid shadow-lg text-center flex flex-row items-center justify-center bg-black text-white border-black py-4 rounded-lg space-x-1"
+                className="border border-solid shadow-xl text-center flex flex-row items-center justify-center bg-black text-white border-black py-4 rounded-lg space-x-1"
               >
                 <IoSettings size={30} />
                 <h1 className="text-2xl font-semibold text-center px-2">
@@ -76,7 +76,7 @@ function Profile() {
               </Link>
               <button
                 onClick={handle_logout}
-                className="border border-solid shadow-lg text-center flex flex-row items-center justify-center bg-red-700 text-white border-red-700 py-4 rounded-lg space-x-1"
+                className="border border-solid shadow-xl text-center flex flex-row items-center justify-center bg-red-700 text-white border-red-700 py-4 rounded-lg space-x-1"
               >
                 <h1 className="text-2xl font-semibold text-center px-2">
                   Logout

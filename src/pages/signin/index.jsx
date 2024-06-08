@@ -1,34 +1,117 @@
+import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import axios from "axios";
 import Link from "next/link";
-import { useState, useRef } from "react";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import Head from "next/head";
 import Layout from "@/components/layout/Layout";
-import OtpVerifiaction from "../../components/otpVerification";
+import OtpVerification from "../../components/otpVerification";
+import accountExistanceCheck from "../../utils/account_existance_check";
 import Image from "next/image";
 import Logo from "@/assets/logo.jpg";
 
 function Signin() {
+  const [modalContent, setModalContent] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [dob, setDob] = useState("");
+  const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
   const [otpVerificationView, setOtpVerificationView] = useState(false);
+  const { data: session } = useSession();
 
-  function generateOtp() {
-    const digits = "0123456789";
-    let otp = "";
-    for (let i = 0; i < 6; i++) {
-      otp += digits[Math.floor(Math.random() * 10)];
+  useEffect(() => {
+    if (session) {
+      setEmail(session.user.email || "");
+      setName(session.user.name || "");
+      if (session.accessToken) {
+        axios
+          .get(
+            "https://people.googleapis.com/v1/people/me?personFields=birthdays",
+            {
+              headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+              },
+            }
+          )
+          .then((response) => {
+            const user = response.data;
+            if (user.birthdays && user.birthdays.length > 0) {
+              const birthday = user.birthdays[0].date;
+              const formattedMonth = String(birthday.month).padStart(2, "0");
+              const formattedDay = String(birthday.day).padStart(2, "0");
+              const formattedDob = `${birthday.year}-${formattedMonth}-${formattedDay}`;
+              setDob(formattedDob);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching additional user info:", error);
+          });
+      }
     }
-    return otp;
-  }
+  }, [session]);
+
+  const fieldsVerification = () => {
+    if (
+      name.trim() === "" ||
+      email.trim() === "" ||
+      phone.trim() === "" ||
+      dob === "" ||
+      password.trim() === "" ||
+      rePassword.trim() === "" ||
+      gender.trim() === ""
+    ) {
+      return "Please fill in all the fields.";
+    }
+
+    if (password !== rePassword) {
+      return "Passwords do not match.";
+    }
+
+    if (password.length < 8) {
+      return "Password must contain at least 8 characters.";
+    }
+
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least 1 lower case alphabet.";
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least 1 upper case alphabet.";
+    }
+
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least 1 numeral digit.";
+    }
+
+    if (!/[!@#$%^&*]/.test(password)) {
+      return "Password must contain at least 1 special character.";
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setOtpVerificationView(true);
+    const fieldValidation = fieldsVerification();
+    const account_exist= await accountExistanceCheck(email, phone);
+    if (fieldValidation === true) {
+      if(account_exist !== false){
+        setModalContent(account_exist);
+        setModalVisible(true);
+        return;
+      }
+      else{
+      setOtpVerificationView(true);}
+    } else {
+      setModalContent(fieldValidation);
+      setModalVisible(true);
+      setOtpVerificationView(false);
+    }
   };
 
   return (
@@ -65,20 +148,36 @@ function Signin() {
             </h1>
             <form className="mt-10" onSubmit={handleSubmit}>
               <input
-                onChange={(e) => setName(e.target.value)}
+                value={name}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  if (/^[a-zA-Z\s]*$/.test(inputValue)) {
+                    setName(inputValue);
+                  }
+                }}
                 type="text"
                 placeholder="Enter name"
                 className="border border-solid border-black shadow-md px-6 py-2 rounded-lg w-full"
               />
               <input
-                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                onChange={(e) => {
+                  const newValue = e.target.value.replace(/\s/g, "");
+                  setEmail(newValue);
+                }}
                 type="email"
                 placeholder="Enter email"
                 className="border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full"
               />
               <input
-                onChange={(e) => setPhone(e.target.value)}
-                type="number"
+                value={phone}
+                onChange={(e) => {
+                  const formattedPhone = e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 10);
+                  setPhone(formattedPhone);
+                }}
+                type="text"
                 placeholder="Enter Phone.No"
                 maxLength={10}
                 className="border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full number-field"
@@ -89,6 +188,7 @@ function Signin() {
                 </h1>
                 <div className="h-10 border border-solid border-gray-300 rounded-xl mx-4 flex-grow"></div>
                 <input
+                  value={dob}
                   placeholder="Enter DOB"
                   type="date"
                   onChange={(e) => {
@@ -97,25 +197,42 @@ function Signin() {
                   className="ml-2 px-4 py-2 border border-solid border-gray-300 shadow-md rounded-lg w-3/5 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
+              <select
+                id="status"
+                name="status"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full"
+              >
+                <option value="">
+                  Select Gender
+                </option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Others</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
               <div className="mt-5">
                 <h1 className="text-lg text-black font-bold ml-2">
                   Password constraints:
                 </h1>
                 <ul className="text-gray-600 text-sm ml-8 list-disc">
-                  <li>Contains atleast 8 characters.</li>
-                  <li>Contains atleast 1 upper case alphabet.</li>
-                  <li>Contains atleast 1 lower case alphabet.</li>
-                  <li>Contains atleast 1 numeral digit.</li>
-                  <li>Contains atleast 1 special character.</li>
+                  <li>Contains at least 8 characters.</li>
+                  <li>Contains at least 1 upper case alphabet.</li>
+                  <li>Contains at least 1 lower case alphabet.</li>
+                  <li>Contains at least 1 numeral digit.</li>
+                  <li>Contains at least 1 special character.</li>
                 </ul>
               </div>
               <input
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="Enter password"
                 className="border border-solid shadow-md border-black px-6 py-2 rounded-lg mt-3 w-full"
               />
               <input
+                value={rePassword}
                 onChange={(e) => {
                   setRePassword(e.target.value);
                 }}
@@ -132,6 +249,8 @@ function Signin() {
               </h1>
               <h1 className="text-center text-xl font-semibold mt-2">or</h1>
               <button
+                onClick={() => signIn("google", { callbackUrl: "/signin" })}
+                type="button"
                 className="items-center justify-center mt-4 mb-2 text-black border bg-gray-50 border-black border-solid py-2 w-full rounded-full"
               >
                 <div className="flex flex-row items-center space-x-2 justify-center">
@@ -162,14 +281,34 @@ function Signin() {
               <h1 className="text-center">Login</h1>
             </Link>
           </div>
+          {modalVisible && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+              <div className="bg-white p-8 rounded-lg shadow-lg">
+                <h1 className="text-xl font-semibold mb-4">{modalContent}</h1>
+                <button
+                  onClick={() => setModalVisible(false)}
+                  className="text-blue-500 font-semibold"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
-        <OtpVerifiaction
+        <OtpVerification
+          OTPpath={"email"}
           text="Enter the OTP sent to your email."
-          OTP={generateOtp()}
           VerificationType="account"
           conffetti={true}
-          data={{ name: name, password: rePassword, email: email,  phone_number: phone,dob:dob }}
+          data={{
+            name: name,
+            password: rePassword,
+            email: email,
+            phone_number: phone,
+            dob: dob,
+            gender: gender,
+          }}
         />
       )}
     </Layout>
