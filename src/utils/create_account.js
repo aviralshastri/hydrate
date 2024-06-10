@@ -1,6 +1,6 @@
 export default async function createAccount(name, password, email, phone, dob,gender) {
   try {
-    const response = await fetch('http://192.168.1.9:9000/create_account', {
+    const response = await fetch('http://127.0.0.1:9000/create_account', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

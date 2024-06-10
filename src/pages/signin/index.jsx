@@ -28,10 +28,11 @@ function Signin() {
     if (session) {
       setEmail(session.user.email || "");
       setName(session.user.name || "");
+      console.log(session);
       if (session.accessToken) {
         axios
           .get(
-            "https://people.googleapis.com/v1/people/me?personFields=birthdays",
+            "https://people.googleapis.com/v1/people/me?personFields=birthdays,genders,phoneNumbers",
             {
               headers: {
                 Authorization: `Bearer ${session.accessToken}`,
@@ -40,12 +41,24 @@ function Signin() {
           )
           .then((response) => {
             const user = response.data;
+
             if (user.birthdays && user.birthdays.length > 0) {
               const birthday = user.birthdays[0].date;
               const formattedMonth = String(birthday.month).padStart(2, "0");
               const formattedDay = String(birthday.day).padStart(2, "0");
               const formattedDob = `${birthday.year}-${formattedMonth}-${formattedDay}`;
               setDob(formattedDob);
+            }
+
+            if (user.phoneNumbers && user.phoneNumbers.length > 0) {
+              setPhone(user.phoneNumbers[0].value);
+            }
+
+            if (user.genders && user.genders.length > 0) {
+              const genderValue = user.genders[0].value;
+              setGender(
+                genderValue.charAt(0).toUpperCase() + genderValue.slice(1)
+              );
             }
           })
           .catch((error) => {
@@ -65,6 +78,69 @@ function Signin() {
       rePassword.trim() === "" ||
       gender.trim() === ""
     ) {
+      if (name.trim() === "") {
+        const element = document.getElementById("name");
+        element.className =
+          "border border-solid border-red-500 shadow-md px-6 py-2 rounded-lg w-full";
+      } else {
+        const element = document.getElementById("name");
+        element.className =
+          "border border-solid border-black shadow-md px-6 py-2 rounded-lg w-full";
+      }
+      if (email.trim() === "") {
+        const element = document.getElementById("email");
+        element.className =
+          "border border-solid border-red-500 shadow-md px-6 py-2 rounded-lg mt-5 w-full";
+      } else {
+        const element = document.getElementById("email");
+        element.className =
+          "border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full";
+      }
+      if (phone.trim() === "") {
+        const element = document.getElementById("phone");
+        element.className =
+          "border border-solid border-red-500 shadow-md px-6 py-2 rounded-lg mt-5 w-full number-field";
+      } else {
+        const element = document.getElementById("phone");
+        element.className =
+          "border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full";
+      }
+      if (dob === "") {
+        const element = document.getElementById("dob");
+        element.className =
+          "border border-solid border-red-500 shadow-md px-6 py-2 rounded-lg mt-5 w-full";
+      } else {
+        const element = document.getElementById("dob");
+        element.className =
+          "border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full";
+      }
+      if (gender.trim() === "") {
+        const element = document.getElementById("gender");
+        element.className =
+          "border border-solid border-red-500 shadow-md px-6 py-2 rounded-lg mt-5 w-full";
+      } else {
+        const element = document.getElementById("gender");
+        element.className =
+          "border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full";
+      }
+      if (password.trim() === "") {
+        const element = document.getElementById("password");
+        element.className =
+          "border border-solid shadow-md border-red-500 px-6 py-2 rounded-lg mt-3 w-full";
+      } else {
+        const element = document.getElementById("password");
+        element.className =
+          "border border-solid shadow-md border-black px-6 py-2 rounded-lg mt-3 w-full";
+      }
+      if (rePassword.trim() === "") {
+        const element = document.getElementById("rePassword");
+        element.className =
+          "border border-solid shadow-md border-red-500 px-6 py-2 rounded-lg mt-5 w-full";
+      } else {
+        const element = document.getElementById("rePassword");
+        element.className =
+          "border border-solid shadow-md border-black px-6 py-2 rounded-lg mt-5 w-full";
+      }
       return "Please fill in all the fields.";
     }
 
@@ -98,15 +174,15 @@ function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const fieldValidation = fieldsVerification();
-    const account_exist= await accountExistanceCheck(email, phone);
+    const account_exist = await accountExistanceCheck(email, phone);
     if (fieldValidation === true) {
-      if(account_exist !== false){
+      if (account_exist !== false) {
         setModalContent(account_exist);
         setModalVisible(true);
         return;
+      } else {
+        setOtpVerificationView(true);
       }
-      else{
-      setOtpVerificationView(true);}
     } else {
       setModalContent(fieldValidation);
       setModalVisible(true);
@@ -148,6 +224,7 @@ function Signin() {
             </h1>
             <form className="mt-10" onSubmit={handleSubmit}>
               <input
+                id="name"
                 value={name}
                 onChange={(e) => {
                   const inputValue = e.target.value;
@@ -160,6 +237,7 @@ function Signin() {
                 className="border border-solid border-black shadow-md px-6 py-2 rounded-lg w-full"
               />
               <input
+                id="email"
                 value={email}
                 onChange={(e) => {
                   const newValue = e.target.value.replace(/\s/g, "");
@@ -170,6 +248,7 @@ function Signin() {
                 className="border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full"
               />
               <input
+                id="phone"
                 value={phone}
                 onChange={(e) => {
                   const formattedPhone = e.target.value
@@ -188,6 +267,7 @@ function Signin() {
                 </h1>
                 <div className="h-10 border border-solid border-gray-300 rounded-xl mx-4 flex-grow"></div>
                 <input
+                  id="dob"
                   value={dob}
                   placeholder="Enter DOB"
                   type="date"
@@ -198,15 +278,13 @@ function Signin() {
                 />
               </div>
               <select
-                id="status"
-                name="status"
+                id="gender"
+                name="gender"
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
                 className="border border-solid border-black shadow-md px-6 py-2 rounded-lg mt-5 w-full"
               >
-                <option value="">
-                  Select Gender
-                </option>
+                <option value="">Select Gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Others">Others</option>
@@ -225,6 +303,7 @@ function Signin() {
                 </ul>
               </div>
               <input
+                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
@@ -232,6 +311,7 @@ function Signin() {
                 className="border border-solid shadow-md border-black px-6 py-2 rounded-lg mt-3 w-full"
               />
               <input
+                id="rePassword"
                 value={rePassword}
                 onChange={(e) => {
                   setRePassword(e.target.value);

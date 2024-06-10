@@ -1,4 +1,3 @@
-// pages/api/auth/[...nextauth].js
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -12,7 +11,7 @@ export default NextAuth({
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
-          scope: "openid profile email https://www.googleapis.com/auth/user.birthday.read"
+          scope: "openid profile email https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read https://www.googleapis.com/auth/user.phonenumbers.read https://www.googleapis.com/auth/userinfo.profile"
         }
       }
     })
@@ -28,5 +27,10 @@ export default NextAuth({
       session.accessToken = token.accessToken;
       return session;
     }
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  jwt: {
+    encryption: true,
+  },
+  debug: true,
 });

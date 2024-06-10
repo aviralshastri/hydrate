@@ -107,7 +107,7 @@ function Login() {
               href={"/"}
               className="text-sm text-left mt-4 text-blue-700 underline ml-1"
             >
-              forgot password?
+              Forgot Password?
             </Link>
             <div className="flex flex-row">
               <button className="w-full items-center justify-center mt-6 mb-2 text-white bg-black py-2 rounded-lg">

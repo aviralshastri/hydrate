@@ -1,6 +1,6 @@
 export default async function login(username, password) {
   try {
-      const response = await fetch(`http://192.168.1.9:9000/verify_account`, {
+      const response = await fetch(`http://127.0.0.1:9000/verify_account`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'

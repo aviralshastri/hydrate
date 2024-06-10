@@ -1,6 +1,6 @@
 export async function sendEmailVerification(otp, email){
   try {
-    const response = await fetch('http://192.168.1.9:9000/email_verification', {
+    const response = await fetch('http://127.0.0.1:9000/email_verification', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

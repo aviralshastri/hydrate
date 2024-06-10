@@ -1,6 +1,6 @@
 export default async function accountExistanceCheck(email,phone_number) {
     try {
-      const response = await fetch('http://192.168.1.9:9000/account_existence_check', {
+      const response = await fetch('http://127.0.0.1:9000/account_existence_check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
