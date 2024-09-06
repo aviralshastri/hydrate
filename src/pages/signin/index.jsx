@@ -174,8 +174,8 @@ function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const fieldValidation = fieldsVerification();
-    const account_exist = await accountExistanceCheck(email, phone);
     if (fieldValidation === true) {
+      const account_exist = await accountExistanceCheck(email, phone);
       if (account_exist !== false) {
         setModalContent(account_exist);
         setModalVisible(true);

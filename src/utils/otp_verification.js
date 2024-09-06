@@ -3,8 +3,10 @@ export async function sendEmailVerification(otp, email){
     const response = await fetch('http://127.0.0.1:9000/email_verification', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
-      },
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer hydrate:p24zfwqs8eqdxwnun6qvo4y0argm8nzrnfo228tnnscdl4g8zf',
+          'JWT': ''
+        },
       body: JSON.stringify({ otp:otp ,email:email })
     });
     if (!response.ok) {
